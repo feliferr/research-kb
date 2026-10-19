@@ -1,0 +1,30 @@
+name: pipeline-tests
+
+on:
+  push:
+    paths: ["pipeline/**", "scripts/**", ".github/workflows/pipeline-tests.yml"]
+  pull_request:
+    paths: ["pipeline/**", "scripts/**", ".github/workflows/pipeline-tests.yml"]
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Scripts do pipeline (Telegram falso + repositórios git temporários)
+        run: |
+          git config --global user.name ci && git config --global user.email ci@example.com
+          python3 -m unittest discover -s pipeline/tests -v
+  worker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Worker do Telegram
+        working-directory: pipeline/worker
+        run: node --test

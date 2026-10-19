@@ -6,7 +6,7 @@ A ideia é fechar o ciclo que costuma travar: **salvar → triar → ler → pro
 
 ## Como funciona
 
-1. **Captura.** Links e papers chegam em `inbox/` (importados do WhatsApp/X ou colados à mão).
+1. **Captura.** Links, PDFs e tópicos chegam por um bot do Telegram (o resumo volta com botões Publicar/Descartar; ver [pipeline/SETUP.md](pipeline/SETUP.md)) ou em `inbox/` (importados do WhatsApp/X ou colados à mão).
 2. **Triagem.** Cada item vira uma nota em `sources/<area>/` com resumo curto, esforço e prioridade.
 3. **Estudo semanal.** Um plano em `study/weeks/` escolhe uma fonte para ler, uma para prototipar e uma para revisar.
 4. **Protótipo.** Fontes que valem a prática viram um mini-projeto em `labs/`, com critério de pronto e seção "O que aprendi".

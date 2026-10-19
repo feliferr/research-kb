@@ -7,6 +7,7 @@ Base de conhecimento pública e pessoal sobre IA aplicada. Idioma dos documentos
 - Só entra material público: papers, documentação, repositórios abertos, threads públicas e comentários próprios.
 - Nunca incluir informação de empregadores atuais ou anteriores: código, dados, números, arquiteturas internas, nomes de sistemas internos ou resultados de projetos de empresa. Ao relacionar uma fonte com trabalho profissional, escreva só a lição geral, sem detalhes internos.
 - O conteúdo bruto exportado do WhatsApp fica em `inbox/raw/` (ignorado pelo git). Nunca commitar mensagens pessoais.
+- O que chega pelo bot do Telegram fica num repositório **privado** (`research-kb-inbox`). Aqui só entra o que o dono aprovou no botão Publicar; o pipeline nunca publica sozinho.
 - `scripts/check_denylist.py` falha o CI se algum termo de `.github/denylist.txt` aparecer. Mantenha a lista atualizada.
 
 ## Estrutura
@@ -20,11 +21,13 @@ Base de conhecimento pública e pessoal sobre IA aplicada. Idioma dos documentos
 - `templates/`: modelos de fonte, lab e semana.
 - `scripts/build_index.py`: regenera os índices, valida o frontmatter e calcula a fila priorizada.
 - `scripts/import_inbox.py`: importa exportação do WhatsApp ou lista de URLs para `inbox/`.
-- `.claude/skills/`: `nova-fonte`, `triar-inbox`, `estudo-semanal`, `novo-lab`.
+- `pipeline/`: captura automática pelo bot do Telegram (Worker da Cloudflare, scripts Python, workflows do repositório privado, testes). Guia em `pipeline/SETUP.md`.
+- `.claude/skills/`: `nova-fonte`, `triar-inbox`, `estudo-semanal`, `novo-lab` e `triar-captura` (automática, só para o workflow; instalada por `pipeline/scripts/install_protected.sh`).
 
 ## Convenções
 
 - Frontmatter de fonte, obrigatório: `title`, `area` (igual ao nome da pasta), `kind`, `status`, `saved`. Demais: `url`, `authors`, `year`, `priority` (1 alta, 2 média, 3 baixa), `effort` (`1h`, `weekend`, `project`), `origin`, `tags`, `related`.
+- `kind: topic` é um tópico de estudo sem fonte (sem `url`): perguntas a responder e uma primeira etapa, sem referências inventadas.
 - Status de fonte: `triaged` → `reading` → `noted` → `prototyped` → `archived`. Fontes arquivadas não são apagadas; registre o motivo no Log.
 - Status de lab: `planned`, `in-progress`, `done`, `abandoned`. Frontmatter: `title`, `area`, `status`; opcionais `source`, `tags`, `started`.
 - Limite de WIP: no máximo 1 fonte em `reading` e 1 lab `in-progress`, salvo mudança em `study/plan.md`.

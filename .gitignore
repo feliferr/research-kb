@@ -23,3 +23,8 @@ labs/**/outputs/
 *.onnx
 
 .DS_Store
+
+# Worker da Cloudflare
+pipeline/worker/node_modules/
+pipeline/worker/.wrangler/
+.dev.vars

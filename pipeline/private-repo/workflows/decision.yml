@@ -1,0 +1,36 @@
+# Botões Publicar/Descartar do Telegram. Publicar copia a nota aprovada para o repositório público.
+name: decision
+
+on:
+  repository_dispatch:
+    types: [decision]
+
+permissions: {}
+
+env:
+  KB_REPO: ${{ vars.KB_REPO || 'feliferr/research-kb' }}
+
+concurrency:
+  group: decision-${{ github.event.client_payload.id }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.KB_REPO }}
+          token: ${{ secrets.KB_PUSH_TOKEN }}
+      - uses: actions/checkout@v4
+        with:
+          path: private
+      - name: Aplicar decisão
+        env:
+          PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          KB_REPO: ${{ env.KB_REPO }}
+        run: python3 pipeline/scripts/apply_decision.py --private private

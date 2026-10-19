@@ -1,0 +1,116 @@
+# Captura do Telegram → triagem pelo Claude → rascunho + botões de aprovação no Telegram.
+# Disparado pelo Worker (repository_dispatch: capture). Três jobs, para que o job que lê
+# conteúdo da web e roda o modelo não tenha o token do bot nem permissão de escrita.
+name: capture
+
+on:
+  repository_dispatch:
+    types: [capture]
+
+permissions: {}
+
+env:
+  KB_REPO: ${{ vars.KB_REPO || 'feliferr/research-kb' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # 1. Valida, descarta o que não deve ser triado, baixa PDFs. Tem o token do bot e escreve no repo privado.
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      triage: ${{ steps.proc.outputs.triage }}
+      id: ${{ steps.proc.outputs.id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.KB_REPO }}
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          path: private
+      - name: Instalar pdftotext (só para PDFs)
+        if: github.event.client_payload.attachment != null
+        run: command -v pdftotext >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils)
+      - name: Processar captura
+        id: proc
+        env:
+          PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: python3 pipeline/scripts/process_capture.py --private private --work work
+      - uses: actions/upload-artifact@v4
+        if: steps.proc.outputs.triage == 'true'
+        with:
+          name: capture-${{ steps.proc.outputs.id }}
+          path: work/
+          retention-days: 1
+
+  # 2. Lê o conteúdo e escreve o rascunho. Só leitura; sem segredos além da autenticação do Claude.
+  triage:
+    needs: prepare
+    if: needs.prepare.outputs.triage == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.KB_REPO }}
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: capture-${{ needs.prepare.outputs.id }}
+          path: work
+      - name: Triar com o Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ github.token }}
+          prompt: |
+            Siga a skill triar-captura (.claude/skills/triar-captura/SKILL.md): leia o arquivo, siga todos os passos
+            e escreva somente work/drafts/${{ needs.prepare.outputs.id }}.md. Modo automático: não faça perguntas.
+          claude_args: |
+            --max-turns 20
+            --allowedTools "Read,Write,Glob,Grep,WebFetch,WebSearch"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: draft-${{ needs.prepare.outputs.id }}
+          path: work/drafts/${{ needs.prepare.outputs.id }}.md
+          if-no-files-found: ignore
+          retention-days: 1
+
+  # 3. Valida o rascunho, guarda no repo privado e pergunta no Telegram. Não executa nada vindo do modelo.
+  deliver:
+    needs: [prepare, triage]
+    if: always() && needs.prepare.outputs.triage == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.KB_REPO }}
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          path: private
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: draft-${{ needs.prepare.outputs.id }}
+          path: work/drafts
+      - name: Entregar rascunho
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          KB_REPO: ${{ env.KB_REPO }}
+          CAPTURE_ID: ${{ needs.prepare.outputs.id }}
+          TRIAGE_RESULT: ${{ needs.triage.result }}
+        run: python3 pipeline/scripts/deliver_draft.py --private private --work work --id "$CAPTURE_ID" --triage-result "$TRIAGE_RESULT"

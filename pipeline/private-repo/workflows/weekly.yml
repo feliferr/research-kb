@@ -1,0 +1,107 @@
+# Plano semanal (segunda) e lembretes (quinta e domingo). Os horários vêm do cron do Worker (/semana também dispara).
+name: weekly
+
+on:
+  repository_dispatch:
+    types: [weekly, nudge]
+  workflow_dispatch:
+
+permissions: {}
+
+env:
+  KB_REPO: ${{ vars.KB_REPO || 'feliferr/research-kb' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  nudge:
+    if: github.event.action == 'nudge'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.KB_REPO }}
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          path: private
+      - name: Lembrete
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          KB_REPO: ${{ env.KB_REPO }}
+        run: python3 pipeline/scripts/digest.py nudge --private private
+
+  # O modelo só propõe um patch (sem token de escrita); o job seguinte confere o que o patch toca.
+  plan:
+    if: github.event.action == 'weekly' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    outputs:
+      week: ${{ steps.week.outputs.week }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.KB_REPO }}
+          persist-credentials: false
+      - id: week
+        run: echo "week=$(date -u +%G-W%V)" >> "$GITHUB_OUTPUT"
+      - name: Montar o plano com o Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ github.token }}
+          prompt: |
+            Siga a skill estudo-semanal (.claude/skills/estudo-semanal/SKILL.md) para a semana ${{ steps.week.outputs.week }}.
+            Modo automático, sem interação: NÃO faça perguntas e deixe a retro anterior em branco se o repositório não tiver os dados.
+            A data/semana é a indicada acima (não rode comandos para obtê-la). Se study/weeks/${{ steps.week.outputs.week }}.md já existir,
+            não sobrescreva: apenas pare. Altere somente study/weeks/, o status/Log das fontes escolhidas em sources/ e os índices.
+            Comandos permitidos: python3 scripts/build_index.py e python3 scripts/build_index.py --queue.
+          claude_args: |
+            --max-turns 25
+            --allowedTools "Read,Write,Edit,Glob,Grep,Bash(python3 scripts/build_index.py:*)"
+      - name: Gerar patch
+        run: |
+          mkdir -p work
+          git add -A -- study sources README.md
+          git diff --cached --binary > work/plan.patch
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plan-patch
+          path: work/plan.patch
+          retention-days: 1
+
+  apply:
+    needs: plan
+    if: always() && needs.plan.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.KB_REPO }}
+          token: ${{ secrets.KB_PUSH_TOKEN }}
+      - uses: actions/checkout@v4
+        with:
+          path: private
+      - uses: actions/download-artifact@v4
+        with:
+          name: plan-patch
+          path: work
+      - name: Aplicar patch (só caminhos permitidos)
+        run: python3 pipeline/scripts/apply_plan.py --patch work/plan.patch
+      - name: Avisar no Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          KB_REPO: ${{ env.KB_REPO }}
+        run: python3 pipeline/scripts/digest.py plan --private private

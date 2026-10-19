@@ -24,14 +24,17 @@ BEGIN, END = "<!-- BEGIN:INDEX -->", "<!-- END:INDEX -->"
 
 SOURCE_STATUSES = ["triaged", "reading", "noted", "prototyped", "archived"]
 LAB_STATUSES = ["planned", "in-progress", "done", "abandoned"]
-KINDS = ["paper", "doc", "repo", "thread", "video", "blog", "other"]
+KINDS = ["paper", "doc", "repo", "thread", "video", "blog", "topic", "other"]
 EFFORTS = ["1h", "weekend", "project"]
 STALE_DAYS = 60
 QUEUE_TOP = 10
 
 
 def parse_frontmatter(path: Path) -> dict:
-    text = path.read_text(encoding="utf-8")
+    return parse_frontmatter_text(path.read_text(encoding="utf-8"))
+
+
+def parse_frontmatter_text(text: str) -> dict:
     m = re.match(r"---\n(.*?)\n---\n", text, re.S)
     if not m:
         raise ValueError("frontmatter ausente")
