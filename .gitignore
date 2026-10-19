@@ -1,0 +1,22 @@
+# Conteúdo bruto e pessoal: nunca versionar
+inbox/raw/*
+!inbox/raw/.gitkeep
+.env
+.env.*
+
+# Python / notebooks
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+
+# Artefatos pesados dos labs
+labs/**/data/
+labs/**/outputs/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+
+.DS_Store

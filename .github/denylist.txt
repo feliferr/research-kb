@@ -1,0 +1,5 @@
+# Termos que nunca devem aparecer neste repositório público (um por linha, sem diferenciar maiúsculas).
+# Linhas começando com # são ignoradas. Use para nomes de sistemas internos, clientes, códigos de projeto etc.
+# Exemplo (descomente e ajuste):
+# nome-interno-do-sistema
+# codigo-do-projeto-confidencial
