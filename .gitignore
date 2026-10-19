@@ -1,6 +1,9 @@
 # Conteúdo bruto e pessoal: nunca versionar
 inbox/raw/*
 !inbox/raw/.gitkeep
+# O inbox é local: guarda links e anotações pessoais ainda não triados
+inbox/*.md
+!inbox/README.md
 .env
 .env.*
 

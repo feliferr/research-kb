@@ -118,6 +118,13 @@ def load_labs(errors):
     return items
 
 
+def last_activity(item):
+    """Data da última entrada do Log (`- AAAA-MM-DD: ...`); sem Log, a data em que foi salva."""
+    text = item["path"].read_text(encoding="utf-8")
+    dates = [d for d in (parse_date(x) for x in re.findall(r"^- (\d{4}-\d{2}-\d{2}):", text, re.M)) if d]
+    return max(dates) if dates else parse_date(item["meta"].get("saved"))
+
+
 def count_inbox() -> int:
     if not INBOX.is_dir():
         return 0
@@ -148,7 +155,7 @@ def table(headers, rows):
 def render_root(sources, labs):
     n_by = lambda s: sum(1 for x in sources if x["meta"].get("status") == s)
     parts = [
-        f"**Inbox:** {count_inbox()} a triar · **Fontes:** {len(sources)} · **Labs:** {len(labs)}",
+        f"**Fontes:** {len(sources)} · **Labs:** {len(labs)}",
         "",
         "**Fontes por status:** " + " · ".join(f"{s}: {n_by(s)}" for s in SOURCE_STATUSES),
         "",
@@ -206,7 +213,7 @@ def replace_block(text: str, body: str, where: str) -> str:
 
 def queue_report(sources, labs):
     today = date.today()
-    lines = ["WIP atual:"]
+    lines = [f"Inbox local: {count_inbox()} itens a triar", "", "WIP atual:"]
     wip = [x for x in sources if x["meta"].get("status") == "reading"]
     wip_labs = [x for x in labs if x["meta"].get("status") == "in-progress"]
     for x in wip:
@@ -215,12 +222,12 @@ def queue_report(sources, labs):
         lines.append(f"  [lab]   {rel(x['path'], ROOT)}")
     if not wip and not wip_labs:
         lines.append("  (nada)")
-    lines += ["", "Fila (triaged), da mais para a menos prioritária:"]
+    lines += ["", "Fila (triaged), da mais para a menos prioritária (idade = dias desde a última entrada do Log):"]
     queue = sorted((x for x in sources if x["meta"].get("status") == "triaged"), key=sort_key)
     for i, x in enumerate(queue, 1):
         m = x["meta"]
-        saved = parse_date(m.get("saved"))
-        age = (today - saved).days if saved else -1
+        last = last_activity(x)
+        age = (today - last).days if last else -1
         flag = " PARADA" if age > STALE_DAYS else ""
         lines.append(
             f"  {i:>2}. p{m.get('priority', '3')} {m.get('effort', '-'):<8} {age:>4}d{flag}  {rel(x['path'], ROOT)}"

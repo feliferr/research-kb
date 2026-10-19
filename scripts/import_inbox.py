@@ -37,6 +37,15 @@ ATTACH_RES = [
 ]
 MEDIA_OMITTED_RE = re.compile(r"<(?:m[ií]dia oculta|media omitted)>", re.I)
 TRACKING_PARAMS = {"fbclid", "gclid", "igshid", "si", "s", "t"}
+# Links de reunião, armazenamento e mensagens: nunca entram no inbox (o repositório é público).
+PRIVATE_DOMAINS = {"zoom.us", "meet.google.com", "teams.microsoft.com", "drive.google.com", "docs.google.com",
+                   "mail.google.com", "calendar.google.com", "wa.me", "whatsapp.com", "dropbox.com"}
+EXTRA_SKIP = set()
+
+
+def is_private(url: str) -> bool:
+    host = urlparse(url).netloc.lower().removeprefix("www.")
+    return any(host == d or host.endswith("." + d) for d in PRIVATE_DOMAINS | EXTRA_SKIP)
 
 
 def clean_url(url: str) -> str:
@@ -135,7 +144,7 @@ def run_whatsapp(args) -> None:
     messages = parse_whatsapp(src.read_text(encoding="utf-8"), args.me, args.month_first)
     since = date.fromisoformat(args.since) if args.since else None
     seen = existing_urls()
-    created = dupes = skipped = 0
+    created = dupes = skipped = private = 0
     for msg in messages:
         if since and msg["date"] < since:
             continue
@@ -143,7 +152,9 @@ def run_whatsapp(args) -> None:
         urls = []
         for u in URL_RE.findall(text):
             u = clean_url(u)
-            if u not in urls:
+            if is_private(u):
+                private += 1
+            elif u not in urls:
                 urls.append(u)
         wrote = False
         for u in urls:
@@ -172,15 +183,18 @@ def run_whatsapp(args) -> None:
         else:
             skipped += 1
     prefix = "[dry-run] " if args.dry_run else ""
-    print(f"{prefix}{len(messages)} mensagens lidas · {created} itens criados · {dupes} URLs já conhecidas · {skipped} sem URL/anexo ignoradas")
+    print(f"{prefix}{len(messages)} mensagens lidas · {created} itens criados · {dupes} URLs já conhecidas · {skipped} sem URL/anexo ignoradas · {private} links de domínios privados ignorados")
 
 
 def run_urls(args) -> None:
     text = Path(args.file).read_text(encoding="utf-8")
     day = date.fromisoformat(args.saved) if args.saved else date.today()
     seen = existing_urls()
-    created = dupes = 0
+    created = dupes = private = 0
     for u in dict.fromkeys(clean_url(x) for x in URL_RE.findall(text)):
+        if is_private(u):
+            private += 1
+            continue
         key = normalize_url(u)
         if key in seen:
             dupes += 1
@@ -189,7 +203,7 @@ def run_urls(args) -> None:
         write_item(day, args.origin, "", url=u, dry_run=args.dry_run)
         created += 1
     prefix = "[dry-run] " if args.dry_run else ""
-    print(f"{prefix}{created} itens criados · {dupes} URLs já conhecidas")
+    print(f"{prefix}{created} itens criados · {dupes} URLs já conhecidas · {private} links de domínios privados ignorados")
 
 
 def main() -> None:
@@ -202,14 +216,17 @@ def main() -> None:
     w.add_argument("--month-first", action="store_true", help="datas no formato mm/dd")
     w.add_argument("--keep-notes", action="store_true", help="mantém mensagens de texto sem URL como itens")
     w.add_argument("--dry-run", action="store_true")
+    w.add_argument("--skip-domains", default="", help="domínios extras a ignorar, separados por vírgula")
     w.set_defaults(func=run_whatsapp)
     u = sub.add_parser("urls", help="importa URLs de um arquivo de texto")
     u.add_argument("file")
     u.add_argument("--origin", default="manual", help="whatsapp | x | manual (padrão: manual)")
     u.add_argument("--saved", help="data a registrar (padrão: hoje)")
     u.add_argument("--dry-run", action="store_true")
+    u.add_argument("--skip-domains", default="", help="domínios extras a ignorar, separados por vírgula")
     u.set_defaults(func=run_urls)
     args = ap.parse_args()
+    EXTRA_SKIP.update(d.strip().lower() for d in args.skip_domains.split(",") if d.strip())
     if not Path(args.file).is_file():
         sys.exit(f"arquivo não encontrado: {args.file}")
     args.func(args)

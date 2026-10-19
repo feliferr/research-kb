@@ -8,4 +8,4 @@ Itens crus, ainda não triados. Cada arquivo `AAAA-MM-DD-<slug>.md` tem `url` (o
   `python3 scripts/import_inbox.py urls arquivo.txt --origin x`.
 - Triar: peça a skill `triar-inbox`. Cada item triado vira uma nota em `sources/<area>/` e sai daqui.
 
-Os arquivos de `inbox/raw/` nunca são commitados.
+Os itens de `inbox/*.md` e os arquivos de `inbox/raw/` ficam só na sua máquina (`.gitignore`): contêm anotações pessoais e links ainda não avaliados. Links de reunião e armazenamento (Zoom, Drive etc.) são ignorados na importação.

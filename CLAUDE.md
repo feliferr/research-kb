@@ -11,7 +11,7 @@ Base de conhecimento pública e pessoal sobre IA aplicada. Idioma dos documentos
 
 ## Estrutura
 
-- `inbox/<data>-<slug>.md`: itens crus ainda não triados (url, data, origem, nota original). `inbox/raw/` é local e ignorado.
+- `inbox/<data>-<slug>.md`: itens crus ainda não triados (url, data, origem, nota original). **Local e ignorado pelo git** (contém anotações pessoais); só as fontes triadas vão para o repositório. `inbox/raw/` também é ignorado.
 - `sources/<area>/<slug>.md`: uma fonte por arquivo. Áreas: `computer-vision`, `nlp`, `recsys`, `genai`, `mlops`.
 - `sources/<area>/README.md`: descrição da área + índice gerado (não editar entre `<!-- BEGIN:INDEX -->` e `<!-- END:INDEX -->`).
 - `labs/<slug>/README.md`: um protótipo por pasta, com código e resultados ao lado.
