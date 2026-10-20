@@ -75,6 +75,8 @@ npx wrangler deploy                                   # imprime a URL https://re
 TELEGRAM_BOT_TOKEN=... TELEGRAM_WEBHOOK_SECRET=... WORKER_URL=https://research-kb-bot.<sub>.workers.dev npm run set-webhook
 ```
 
+`<sub>` é o subdomínio `workers.dev` da sua conta da Cloudflare; você não precisa descobri-lo. Se a conta ainda não tem um, o `wrangler deploy` pergunta no primeiro deploy e pede que você escolha (por exemplo `felipe`). Copie a URL completa que o deploy imprime, com `https://` e sem barra no final, e use-a em `WORKER_URL` (exemplo: `https://research-kb-bot.felipe.workers.dev`). Se esquecer a URL, ela aparece em *Workers & Pages → research-kb-bot* no painel da Cloudflare.
+
 #### Descobrir o seu ID do Telegram
 
 O ID não aparece em nenhuma tela do Telegram nem do GitHub; quem informa é o próprio bot:
