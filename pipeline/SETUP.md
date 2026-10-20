@@ -52,7 +52,7 @@ E o token do Claude, com a sua assinatura: no terminal, `claude setup-token` e c
 Em `research-kb-inbox` → *Settings → Secrets and variables → Actions → Secrets*:
 
 - `TELEGRAM_BOT_TOKEN`: token do BotFather
-- `TELEGRAM_CHAT_ID`: seu ID numérico do Telegram (passo 4 mostra como obter)
+- `TELEGRAM_CHAT_ID`: seu ID numérico do Telegram. Você ainda não o tem: ele só aparece no passo 4 (o bot responde com ele ao `/start`). Pule este segredo por ora e volte aqui depois, ou mande uma mensagem ao **@userinfobot** no Telegram para obtê-lo já
 - `CLAUDE_CODE_OAUTH_TOKEN`: saída do `claude setup-token`
 - `KB_PUSH_TOKEN`: o token acima
 
@@ -75,14 +75,24 @@ npx wrangler deploy                                   # imprime a URL https://re
 TELEGRAM_BOT_TOKEN=... TELEGRAM_WEBHOOK_SECRET=... WORKER_URL=https://research-kb-bot.<sub>.workers.dev npm run set-webhook
 ```
 
-Agora mande `/start` ao bot: como `ALLOWED_USER_ID` ainda não existe, ele responde com o seu ID. Então:
+#### Descobrir o seu ID do Telegram
+
+O ID não aparece em nenhuma tela do Telegram nem do GitHub; quem informa é o próprio bot:
+
+1. No Telegram, abra uma conversa privada com o seu bot e mande `/start`.
+2. Enquanto `ALLOWED_USER_ID` não existe, o Worker fica em modo de configuração e responde só a `/start`, com "Seu ID do Telegram é 123456789".
+3. Esse número é o valor de `ALLOWED_USER_ID` (Worker) e de `TELEGRAM_CHAT_ID` (GitHub). Em chat privado os dois são iguais.
+
+Se o bot não responder, rode `npm run set-webhook -- --info` (mostra o último erro do webhook) e confira o `WORKER_URL` usado no `set-webhook`. Atalho: o **@userinfobot** também responde com o seu ID numérico.
+
+Depois, grave o ID no Worker e faça o deploy (sem ele o bot continua em modo de configuração):
 
 ```bash
 npx wrangler secret put ALLOWED_USER_ID               # cole o ID
 npx wrangler deploy
 ```
 
-Coloque o mesmo ID em `TELEGRAM_CHAT_ID` no GitHub (passo 3). A partir daqui o bot ignora em silêncio qualquer outra pessoa.
+Volte ao passo 3 e crie o segredo `TELEGRAM_CHAT_ID` em `research-kb-inbox` com o mesmo ID. A partir daqui o bot ignora em silêncio qualquer outra pessoa.
 
 ### 5. Testar
 
