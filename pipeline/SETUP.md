@@ -56,7 +56,7 @@ Em `research-kb-inbox` → *Settings → Secrets and variables → Actions → S
 - `CLAUDE_CODE_OAUTH_TOKEN`: saída do `claude setup-token`
 - `KB_PUSH_TOKEN`: o token acima
 
-Opcional, em *Variables*: `KB_REPO` (padrão `feliferr/research-kb`).
+Opcional, na aba **Variables** (ao lado de Secrets, no mesmo lugar) de `research-kb-inbox`: `KB_REPO`, o repositório **público** de destino no formato `dono/nome` (sem URL e sem `.git`). Sem ela os workflows usam `feliferr/research-kb`, então só crie a variável se o dono ou o nome do repositório público forem outros (fork, repo renomeado, organização). Se o nome do repositório privado mudar, ajuste também `PRIVATE_REPO` em `pipeline/worker/wrangler.toml` e faça o deploy de novo.
 Anote a data de expiração dos tokens do GitHub; quando vencerem, a publicação falha.
 
 ### 4. Worker da Cloudflare
