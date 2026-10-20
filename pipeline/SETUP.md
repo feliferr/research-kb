@@ -40,7 +40,7 @@ No GitHub, crie um repositório **privado** e vazio com o mesmo nome (sem README
 
 ### 3. Tokens e segredos
 
-Dois tokens do GitHub (*Settings → Developer settings → Fine-grained tokens*), cada um limitado a **um** repositório:
+Dois tokens do GitHub (foto do perfil → *Settings* da conta, não de um repositório → *Developer settings* no fim da barra lateral → *Personal access tokens* → *Fine-grained tokens*; link direto: https://github.com/settings/personal-access-tokens), cada um limitado a **um** repositório:
 
 | Token | Repositório | Permissão | Usado por |
 |---|---|---|---|
