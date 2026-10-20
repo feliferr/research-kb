@@ -49,14 +49,14 @@ Dois tokens do GitHub (foto do perfil → *Settings* da conta, não de um reposi
 
 E o token do Claude, com a sua assinatura: no terminal, `claude setup-token` e copie o resultado.
 
-Em `research-kb-inbox` → *Settings → Secrets and variables → Actions → Secrets*:
+Em `research-kb-inbox` → *Settings → Secrets and variables → Actions → Secrets*, como **Repository secrets** (botão *New repository secret*). Não use *Environment secrets* nem crie environments: os workflows não declaram `environment:`, então segredos e variáveis de um environment não seriam lidos e chegariam vazios:
 
 - `TELEGRAM_BOT_TOKEN`: token do BotFather
 - `TELEGRAM_CHAT_ID`: seu ID numérico do Telegram. Você ainda não o tem: ele só aparece no passo 4 (o bot responde com ele ao `/start`). Pule este segredo por ora e volte aqui depois, ou mande uma mensagem ao **@userinfobot** no Telegram para obtê-lo já
 - `CLAUDE_CODE_OAUTH_TOKEN`: saída do `claude setup-token`
 - `KB_PUSH_TOKEN`: o token acima
 
-Opcional, na aba **Variables** (ao lado de Secrets, no mesmo lugar) de `research-kb-inbox`: `KB_REPO`, o repositório **público** de destino no formato `dono/nome` (sem URL e sem `.git`). Sem ela os workflows usam `feliferr/research-kb`, então só crie a variável se o dono ou o nome do repositório público forem outros (fork, repo renomeado, organização). Se o nome do repositório privado mudar, ajuste também `PRIVATE_REPO` em `pipeline/worker/wrangler.toml` e faça o deploy de novo.
+Opcional, na aba **Variables** (ao lado de Secrets, no mesmo lugar) de `research-kb-inbox`, como **Repository variable** (*New repository variable*): `KB_REPO`, o repositório **público** de destino no formato `dono/nome` (sem URL e sem `.git`). Sem ela os workflows usam `feliferr/research-kb`, então só crie a variável se o dono ou o nome do repositório público forem outros (fork, repo renomeado, organização). Se o nome do repositório privado mudar, ajuste também `PRIVATE_REPO` em `pipeline/worker/wrangler.toml` e faça o deploy de novo.
 Anote a data de expiração dos tokens do GitHub; quando vencerem, a publicação falha.
 
 ### 4. Worker da Cloudflare
