@@ -81,7 +81,10 @@ def known_elsewhere(url: str, private: Path):
             other = kp.load_json(f)
         except ValueError:
             continue
-        if other.get("url") and kp.ii.normalize_url(other["url"]) == key and other.get("status") in ("triaging", "pending", "published"):
+        status = other.get("status")
+        if status == "triaging" and kp.is_stale_triaging(other):
+            continue  # triagem abandonada (runner caiu): não bloqueia um novo envio
+        if other.get("url") and kp.ii.normalize_url(other["url"]) == key and status in ("triaging", "pending", "published"):
             return f"já capturado ({other.get('status')}) em {f.name}"
     return ""
 
@@ -152,6 +155,7 @@ def main() -> None:
             shutil.rmtree(tmp, ignore_errors=True)
 
     cap["status"] = "triaging"
+    cap["received_at"] = kp.utc_now().isoformat(timespec="seconds")
     kp.save_json(path, cap)
     kp.commit_push(args.private, [path], f"capture {cap['id']}: recebida")
     kp.save_json(args.work / "capture.json", {k: v for k, v in cap.items() if k != "attachment"} | (

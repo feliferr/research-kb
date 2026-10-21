@@ -11,6 +11,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 KB_ROOT = Path(__file__).resolve().parents[2]
@@ -26,6 +27,8 @@ MAX_DRAFT_CHARS = 30000
 MAX_ATTACHMENT_BYTES = 20 * 1024 * 1024  # limite do getFile do Telegram
 
 # Estados de uma captura (campo `status` em captures/<id>.json)
+# Uma captura em `triaging` há mais que isso foi abandonada (o prepare+triage+deliver leva ~35 min no pior caso)
+STALE_TRIAGING = timedelta(hours=1)
 TERMINAL = {"duplicate", "rejected_private", "too_big", "unsupported", "empty", "published", "dropped", "failed"}
 
 
@@ -60,6 +63,21 @@ def payload_from_env() -> dict:
     if not isinstance(data, dict):
         raise SystemExit("PAYLOAD deve ser um objeto JSON")
     return data
+
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def is_stale_triaging(capture: dict) -> bool:
+    """True se a captura está em `triaging` mas foi abandonada (sem `received_at` válido = antiga demais)."""
+    try:
+        received = datetime.fromisoformat(str(capture.get("received_at", "")))
+    except ValueError:
+        return True
+    if received.tzinfo is None:
+        return True
+    return utc_now() - received > STALE_TRIAGING
 
 
 def check_id(value) -> str:
@@ -143,21 +161,30 @@ def try_send(chat_id, text: str, reply_to=None, keyboard=None):
         return None
 
 
-def edit_or_send(chat_id, message_id, text: str) -> None:
-    """Troca o texto de uma mensagem (e remove os botões); se não der, envia uma nova."""
+def approval_keyboard(cid: str) -> dict:
+    return {"inline_keyboard": [[
+        {"text": "✅ Publicar", "callback_data": f"pub:{cid}"},
+        {"text": "🗑 Descartar", "callback_data": f"drop:{cid}"},
+    ]]}
+
+
+def edit_or_send(chat_id, message_id, text: str, keyboard=None) -> None:
+    """Troca o texto de uma mensagem; se não der, envia uma nova.
+
+    Remove os botões, a menos que `keyboard` seja passado (ex.: para tentar de novo depois de uma falha)."""
     if message_id:
         try:
             tg_call(
                 "editMessageText",
                 {"chat_id": chat_id, "message_id": message_id, "text": text[:MAX_TELEGRAM_TEXT],
-                 "disable_web_page_preview": True, "reply_markup": {"inline_keyboard": []}},
+                 "disable_web_page_preview": True, "reply_markup": keyboard or {"inline_keyboard": []}},
             )
             return
         except TelegramError as e:
             if "not modified" in str(e):
                 return
             print(f"aviso: edição falhou, enviando nova mensagem ({e})", file=sys.stderr)
-    try_send(chat_id, text)
+    try_send(chat_id, text, keyboard=keyboard)
 
 
 # ---------------------------------------------------------------- git

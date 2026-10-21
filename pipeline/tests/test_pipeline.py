@@ -199,6 +199,39 @@ class PipelineCase(unittest.TestCase):
         self.process(self.capture("20261019-1002-1", url="https://arxiv.org/abs/2410.12345/"))
         self.assertEqual(self.capture_status("20261019-1002-1"), "duplicate")
 
+    def age_capture(self, cid, received_at):
+        """Simula uma captura abandonada em `triaging` (runner caiu antes do deliver)."""
+        path = self.pr / "captures" / f"{cid}.json"
+        cap = json.loads(path.read_text())
+        if received_at is None:
+            cap.pop("received_at", None)
+        else:
+            cap["received_at"] = received_at
+        path.write_text(json.dumps(cap))
+        sh("git", "add", "-A", cwd=self.pr)
+        sh("git", "commit", "-q", "-m", "envelhece", cwd=self.pr)
+        sh("git", "push", "-q", "origin", "HEAD:main", cwd=self.pr)
+
+    def test_stale_triaging_capture_does_not_block_resend(self):
+        for received_at in ("2020-01-01T00:00:00+00:00", None, "lixo"):  # antiga, sem carimbo (legado), inválido
+            with self.subTest(received_at=received_at):
+                self.process(self.capture("20261019-1001-1"))
+                self.age_capture("20261019-1001-1", received_at)
+                self.process(self.capture("20261019-1002-1"))
+                self.assertEqual(self.outputs()["triage"], "true")
+                self.assertEqual(self.capture_status("20261019-1002-1"), "triaging")
+                for f in (self.pr / "captures").glob("2026*.json"):  # limpa para a próxima volta
+                    f.unlink()
+                sh("git", "add", "-A", cwd=self.pr)
+                sh("git", "commit", "-q", "-m", "limpa", cwd=self.pr)
+                sh("git", "push", "-q", "origin", "HEAD:main", cwd=self.pr)
+
+    def test_recent_triaging_capture_still_blocks_duplicate(self):
+        self.process(self.capture("20261019-1001-1"))
+        self.assertIn("received_at", json.loads(self.origin_file(self.pr_origin, "captures/20261019-1001-1.json")))
+        self.process(self.capture("20261019-1002-1"))
+        self.assertEqual(self.capture_status("20261019-1002-1"), "duplicate")
+
     def test_private_domain_is_rejected(self):
         self.process(self.capture(url="https://docs.google.com/document/d/abc"))
         self.assertEqual(self.capture_status("20261019-1001-1"), "rejected_private")
@@ -318,6 +351,9 @@ class PipelineCase(unittest.TestCase):
         proc = self.decide("publish", check=False)
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("Não publiquei", self.tg.edits()[-1]["text"])
+        # a falha devolve os botões, para tentar de novo sem disparar o evento à mão
+        buttons = self.tg.edits()[-1]["reply_markup"]["inline_keyboard"][0]
+        self.assertEqual([b["callback_data"] for b in buttons], ["pub:20261019-1001-1", "drop:20261019-1001-1"])
         self.assertEqual(self.capture_status("20261019-1001-1"), "pending")
         with self.assertRaises(subprocess.CalledProcessError):
             self.origin_file(self.kb_origin, "sources/genai/um-paper-bom.md")

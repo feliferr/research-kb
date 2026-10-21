@@ -102,7 +102,8 @@ def main() -> None:
             break
     if not rel:
         detail = "o repositório mudou durante a publicação" if err == "RETRY" else err
-        kp.edit_or_send(chat_id, message_id, f"⛔ Não publiquei '{title}': {detail}. O rascunho segue pendente.")
+        kp.edit_or_send(chat_id, message_id, f"⛔ Não publiquei '{title}': {detail}. O rascunho segue pendente; toque de novo para tentar.",
+                        keyboard=kp.approval_keyboard(cid))
         sys.exit(1)
 
     cap["status"] = "published"

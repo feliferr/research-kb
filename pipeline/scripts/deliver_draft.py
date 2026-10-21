@@ -15,13 +15,6 @@ from pathlib import Path
 import kbpipe as kp
 
 
-def keyboard(cid: str) -> dict:
-    return {"inline_keyboard": [[
-        {"text": "✅ Publicar", "callback_data": f"pub:{cid}"},
-        {"text": "🗑 Descartar", "callback_data": f"drop:{cid}"},
-    ]]}
-
-
 def describe(meta: dict, body: str, cap: dict) -> str:
     bits = [meta.get("area", "?"), meta.get("kind", "?")]
     if meta.get("priority"):
@@ -81,7 +74,7 @@ def main() -> None:
     kp.commit_push(args.private, [draft_out, cap_path], f"capture {cid}: rascunho pronto")
 
     _, body = kp.split_frontmatter(text)
-    kp.send(cap["chat_id"], describe(meta, body, cap), reply_to=cap["message_id"], keyboard=keyboard(cid))
+    kp.send(cap["chat_id"], describe(meta, body, cap), reply_to=cap["message_id"], keyboard=kp.approval_keyboard(cid))
     print(f"{cid}: rascunho entregue ({meta['title']})")
 
 
