@@ -1,5 +1,7 @@
 # Pipeline Telegram → GitHub: configuração
 
+> Para entender **como o sistema funciona** (componentes, diagramas de sequência, estados, segurança), leia [ARCHITECTURE.md](ARCHITECTURE.md). Este arquivo cobre só a configuração.
+
 Você manda um link, PDF ou tópico para o seu bot. Um Worker da Cloudflare valida que é você e dispara um workflow num repositório **privado**; o Claude lê o conteúdo e escreve um rascunho; o bot responde com o resumo e dois botões. Só o que você aprova com **Publicar** chega ao repositório público.
 
 ```

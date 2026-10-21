@@ -21,7 +21,7 @@ Base de conhecimento pública e pessoal sobre IA aplicada. Idioma dos documentos
 - `templates/`: modelos de fonte, lab e semana.
 - `scripts/build_index.py`: regenera os índices, valida o frontmatter e calcula a fila priorizada.
 - `scripts/import_inbox.py`: importa exportação do WhatsApp ou lista de URLs para `inbox/`.
-- `pipeline/`: captura automática pelo bot do Telegram (Worker da Cloudflare, scripts Python, workflows do repositório privado, testes). Guia em `pipeline/SETUP.md`.
+- `pipeline/`: captura automática pelo bot do Telegram (Worker da Cloudflare, scripts Python, workflows do repositório privado, testes). Configuração em `pipeline/SETUP.md`; arquitetura e diagramas em `pipeline/ARCHITECTURE.md` (atualize-o quando mudar fluxos, estados ou permissões do pipeline).
 - `.claude/skills/`: `nova-fonte`, `triar-inbox`, `estudo-semanal`, `novo-lab` e `triar-captura` (automática, só para o workflow; instalada por `pipeline/scripts/install_protected.sh`).
 
 ## Convenções
