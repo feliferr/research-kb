@@ -3,7 +3,7 @@
 Sistemas de recomendação: retrieval, ranking, conteúdo multimodal, avaliação offline e online.
 
 <!-- BEGIN:INDEX -->
-6 fontes
+7 fontes
 
 | Fonte | Tipo | Status | Prior. | Esforço | Salva em |
 |---|---|---|---|---|---|
@@ -13,4 +13,5 @@ Sistemas de recomendação: retrieval, ranking, conteúdo multimodal, avaliaçã
 | [Bootstrapping Conversational Recommendation Agents at Spotify](bootstrapping-conversational-recsys-agents-spotify.md) | blog | triaged | 2 | weekend | 2026-09-27 |
 | [GenPage: Towards End-to-End Generative Homepage Construction at Netflix](genpage-generative-homepage-netflix.md) | paper | triaged | 2 | 1h | 2026-09-28 |
 | [Unified Ranking Across Retrieval Channels: A Large-Scale E-Commerce Approach](unified-ranking-across-retrieval-channels.md) | paper | triaged | 2 | weekend | 2026-10-09 |
+| [Calibrated News Recommendation under Dynamic Feedback Loops: A Simulation Study](calibrated-news-recommendation-under-dynamic-feedback-loops.md) | paper | triaged | 2 | weekend | 2026-10-21 |
 <!-- END:INDEX -->
