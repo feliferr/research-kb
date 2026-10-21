@@ -178,7 +178,8 @@ def current_branch(repo) -> str:
 def commit_push(repo, paths, message: str, retries: int = 5) -> bool:
     """Commit aditivo (arquivos distintos por id) com rebase em caso de corrida. False se nada mudou."""
     configure_git(repo)
-    git(repo, "add", "--", *[str(p) for p in paths])
+    # `git -C repo` resolve caminhos relativos a partir de repo; os chamadores passam caminhos relativos ao cwd
+    git(repo, "add", "--", *[str(Path(p).resolve()) for p in paths])
     if git(repo, "diff", "--cached", "--quiet", check=False).returncode == 0:
         return False
     git(repo, "commit", "-q", "-m", message)

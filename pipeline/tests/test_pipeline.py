@@ -408,6 +408,19 @@ class UnitCase(unittest.TestCase):
         self.assertEqual(self.kp.extract_summary("sem resumo"), "(sem resumo)")
         self.assertTrue(self.kp.extract_summary("> **Resumo:** " + "a" * 900).endswith("…"))
 
+    def test_commit_push_with_relative_repo_path(self):
+        # no workflow o repositório privado é passado como `private` (relativo) e os caminhos já levam esse prefixo
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp, ignore_errors=True)
+        origin, clone = init_clone(tmp, "private", seed_private)
+        (clone / "captures").mkdir(exist_ok=True)
+        (clone / "captures" / "x.json").write_text("{}")
+        cwd = os.getcwd()
+        self.addCleanup(os.chdir, cwd)
+        os.chdir(tmp)
+        self.assertTrue(self.kp.commit_push("private", [Path("private") / "captures" / "x.json"], "teste"))
+        self.assertEqual(sh("git", "--git-dir", str(origin), "show", "main:captures/x.json"), "{}")
+
     def test_id_regex(self):
         for ok in ("20261019-123", "20261019-123-2"):
             self.assertTrue(self.kp.ID_RE.fullmatch(ok))
