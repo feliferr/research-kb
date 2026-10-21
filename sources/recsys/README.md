@@ -3,7 +3,7 @@
 Sistemas de recomendação: retrieval, ranking, conteúdo multimodal, avaliação offline e online.
 
 <!-- BEGIN:INDEX -->
-7 fontes
+8 fontes
 
 | Fonte | Tipo | Status | Prior. | Esforço | Salva em |
 |---|---|---|---|---|---|
@@ -14,4 +14,5 @@ Sistemas de recomendação: retrieval, ranking, conteúdo multimodal, avaliaçã
 | [GenPage: Towards End-to-End Generative Homepage Construction at Netflix](genpage-generative-homepage-netflix.md) | paper | triaged | 2 | 1h | 2026-09-28 |
 | [Unified Ranking Across Retrieval Channels: A Large-Scale E-Commerce Approach](unified-ranking-across-retrieval-channels.md) | paper | triaged | 2 | weekend | 2026-10-09 |
 | [Calibrated News Recommendation under Dynamic Feedback Loops: A Simulation Study](calibrated-news-recommendation-under-dynamic-feedback-loops.md) | paper | triaged | 2 | weekend | 2026-10-21 |
+| [Decision4Rec: A Jev-Inspired Framework of Decision Models on Knowledge and Active Graphs for Multi-Agent Recommender Systems](decision4rec-a-jev-inspired-framework-of-decision-models-on.md) | paper | triaged | 2 | weekend | 2026-10-21 |
 <!-- END:INDEX -->
