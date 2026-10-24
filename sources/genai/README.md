@@ -3,7 +3,7 @@
 IA generativa: LLMs, agentes, multimodalidade, avaliação e uso em produção.
 
 <!-- BEGIN:INDEX -->
-6 fontes
+7 fontes
 
 | Fonte | Tipo | Status | Prior. | Esforço | Salva em |
 |---|---|---|---|---|---|
@@ -13,4 +13,5 @@ IA generativa: LLMs, agentes, multimodalidade, avaliação e uso em produção.
 | [The Agentic Scientist: Orchestrating Coding Agents for Automated Scientific (Co-)Discovery](the-agentic-scientist-orchestrating-coding-agents-for-automa.md) | paper | triaged | 2 | weekend | 2026-10-20 |
 | [Epi: Towards a Persistent, Self-Improving Agent for Autonomous Research](epi-towards-a-persistent-self-improving-agent-for-autonomous.md) | paper | triaged | 2 | weekend | 2026-10-21 |
 | [RAG-Anything: All-in-One RAG Framework](rag-anything-all-in-one-rag-framework.md) | repo | triaged | 2 | weekend | 2026-10-21 |
+| [LLM-as-Jev: LLMs Are Already Jev-Style Decision Models -- When and How to Fine-Tune Them](llm-as-jev-llms-are-already-jev-style-decision-models-when-a.md) | paper | triaged | 2 | weekend | 2026-10-24 |
 <!-- END:INDEX -->
