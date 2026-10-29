@@ -14,16 +14,16 @@ A ideia é fechar o ciclo que costuma travar: **salvar → triar → ler → pro
 Detalhes das convenções em [CLAUDE.md](CLAUDE.md) e da cadência em [study/plan.md](study/plan.md).
 
 <!-- BEGIN:INDEX -->
-**Fontes:** 27 · **Labs:** 1
+**Fontes:** 28 · **Labs:** 1
 
-**Fontes por status:** triaged: 26 · reading: 1 · noted: 0 · prototyped: 0 · archived: 0
+**Fontes por status:** triaged: 27 · reading: 1 · noted: 0 · prototyped: 0 · archived: 0
 
 ## Áreas
 
 | Área | Fontes | Lendo | Anotadas | Prototipadas |
 |---|---|---|---|---|
 | [computer-vision](sources/computer-vision/README.md) | 8 | 1 | 0 | 0 |
-| [genai](sources/genai/README.md) | 8 | 0 | 0 | 0 |
+| [genai](sources/genai/README.md) | 9 | 0 | 0 | 0 |
 | [mlops](sources/mlops/README.md) | 1 | 0 | 0 | 0 |
 | [nlp](sources/nlp/README.md) | 1 | 0 | 0 | 0 |
 | [recsys](sources/recsys/README.md) | 9 | 0 | 0 | 0 |
