@@ -3,7 +3,7 @@
 Sistemas de recomendação: retrieval, ranking, conteúdo multimodal, avaliação offline e online.
 
 <!-- BEGIN:INDEX -->
-9 fontes
+10 fontes
 
 | Fonte | Tipo | Status | Prior. | Esforço | Salva em |
 |---|---|---|---|---|---|
@@ -16,4 +16,5 @@ Sistemas de recomendação: retrieval, ranking, conteúdo multimodal, avaliaçã
 | [Calibrated News Recommendation under Dynamic Feedback Loops: A Simulation Study](calibrated-news-recommendation-under-dynamic-feedback-loops.md) | paper | triaged | 2 | weekend | 2026-10-21 |
 | [Decision4Rec: A Jev-Inspired Framework of Decision Models on Knowledge and Active Graphs for Multi-Agent Recommender Systems](decision4rec-a-jev-inspired-framework-of-decision-models-on.md) | paper | triaged | 2 | weekend | 2026-10-21 |
 | [Advancing Generative Recommendation Inference: colaboração Spotify e NVIDIA no TensorRT LLM](advancing-generative-recommendation-inference-colaboracao-sp.md) | blog | triaged | 2 | 1h | 2026-10-24 |
+| [GenRec: An LLM-Backed Recommendation Ranker at Netflix](genrec-an-llm-backed-recommendation-ranker-at-netflix.md) | paper | triaged | 2 | 1h | 2026-11-05 |
 <!-- END:INDEX -->
