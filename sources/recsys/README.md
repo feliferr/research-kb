@@ -3,7 +3,7 @@
 Sistemas de recomendação: retrieval, ranking, conteúdo multimodal, avaliação offline e online.
 
 <!-- BEGIN:INDEX -->
-10 fontes
+11 fontes
 
 | Fonte | Tipo | Status | Prior. | Esforço | Salva em |
 |---|---|---|---|---|---|
@@ -17,4 +17,5 @@ Sistemas de recomendação: retrieval, ranking, conteúdo multimodal, avaliaçã
 | [Decision4Rec: A Jev-Inspired Framework of Decision Models on Knowledge and Active Graphs for Multi-Agent Recommender Systems](decision4rec-a-jev-inspired-framework-of-decision-models-on.md) | paper | triaged | 2 | weekend | 2026-10-21 |
 | [Advancing Generative Recommendation Inference: colaboração Spotify e NVIDIA no TensorRT LLM](advancing-generative-recommendation-inference-colaboracao-sp.md) | blog | triaged | 2 | 1h | 2026-10-24 |
 | [GenRec: An LLM-Backed Recommendation Ranker at Netflix](genrec-an-llm-backed-recommendation-ranker-at-netflix.md) | paper | triaged | 2 | 1h | 2026-11-05 |
+| [Leveraging LLMs and Heterogeneous Knowledge Graphs for Persona-Driven Session-Based Recommendation](leveraging-llms-and-heterogeneous-knowledge-graphs-for-perso.md) | paper | triaged | 2 | weekend | 2026-11-08 |
 <!-- END:INDEX -->
