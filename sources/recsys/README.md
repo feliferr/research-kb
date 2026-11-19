@@ -3,7 +3,7 @@
 Sistemas de recomendação: retrieval, ranking, conteúdo multimodal, avaliação offline e online.
 
 <!-- BEGIN:INDEX -->
-14 fontes
+15 fontes
 
 | Fonte | Tipo | Status | Prior. | Esforço | Salva em |
 |---|---|---|---|---|---|
@@ -21,4 +21,5 @@ Sistemas de recomendação: retrieval, ranking, conteúdo multimodal, avaliaçã
 | [Leveraging LLMs and Heterogeneous Knowledge Graphs for Persona-Driven Session-Based Recommendation](leveraging-llms-and-heterogeneous-knowledge-graphs-for-perso.md) | paper | triaged | 2 | weekend | 2026-11-08 |
 | [A/B Agent: A Self-Evolving Agent for Strategy Iteration in Industrial A/B Testing](a-b-agent-a-self-evolving-agent-for-strategy-iteration-in-in.md) | paper | triaged | 2 | weekend | 2026-11-09 |
 | [Multimedia Asset Personalization via Multimodal Embeddings at Netflix](multimedia-asset-personalization-via-multimodal-embeddings-a.md) | paper | triaged | 2 | 1h | 2026-11-17 |
+| [PRAGMA: Revolut Foundation Model](pragma-revolut-foundation-model.md) | paper | triaged | 2 | weekend | 2026-11-19 |
 <!-- END:INDEX -->
